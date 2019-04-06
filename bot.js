@@ -11,13 +11,13 @@ const sql = new SQLite('./profiles.sqlite') ;
 
 client.on("ready", async () => {
 
-  console.log("client has started!") ;
+  console.log("bot has started!") ;
 
 }) ;
 
 client.on("message", async message => {
 
-  if(message.author.client) {
+  if(message.author.bot) {
 
     return ;
 
