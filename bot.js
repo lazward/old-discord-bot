@@ -75,15 +75,12 @@ client.on("message", message => {
 
   }
 
-  if (command === `${prefix}setdesc`) {
+  if (command === `${prefix}desc`) {
 
-    console.log("aaa") ;
     let member = message.guild.members.find('displayName', args[0]) ;
     if (member) {
 
-      console.log(member.displayName) ;
       let newDesc = args.slice(1).join(" ") ;
-      console.log(newDesc) ;
 
       let profile = client.getProfile.get(message.author.id, message.guild.id) ;
 
@@ -97,13 +94,39 @@ client.on("message", message => {
 
       client.setProfile.run(profile) ;
 
-
     } else {
 
         message.channel.send("User not found!") ;
 
     }
 
+
+  }
+
+  if (command === `${prefix}title`) {
+
+    let member = message.guild.members.find('displayName', args[0]) ;
+    if (member) {
+
+      let newTitle = args.slice(1).join(" ") ;
+
+      let profile = client.getProfile.get(message.author.id, message.guild.id) ;
+
+      if (!profile) {
+
+        profile = buildProfile(message.author.id, message.guild.id) ;
+
+      }
+
+      profile.title = newTitle ;
+
+      client.setProfile.run(profile) ;
+
+    } else {
+
+        message.channel.send("User not found!") ;
+
+    }
 
   }
 
