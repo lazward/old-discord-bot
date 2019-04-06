@@ -77,56 +77,74 @@ client.on("message", message => {
 
   if (command === `${prefix}desc`) {
 
-    let member = message.guild.members.find('displayName', args[0]) ;
-    if (member) {
+    if (args[0]) {
 
-      let newDesc = args.slice(1).join(" ") ;
+      let member = message.guild.members.find('displayName', args[0]) ;
+      if (member) {
 
-      let profile = client.getProfile.get(message.author.id, message.guild.id) ;
+        let newDesc = args.slice(1).join(" ") ;
 
-      if (!profile) {
+        let profile = client.getProfile.get(message.author.id, message.guild.id) ;
 
-        profile = buildProfile(message.author.id, message.guild.id) ;
+        if (!profile) {
+
+          profile = buildProfile(message.author.id, message.guild.id) ;
+
+        }
+
+        profile.desc = newDesc ;
+
+        client.setProfile.run(profile) ;
+
+      } else {
+
+          message.channel.send("User not found!") ;
 
       }
 
-      profile.desc = newDesc ;
-
-      client.setProfile.run(profile) ;
-
     } else {
 
-        message.channel.send("User not found!") ;
+      message.channel.send("Please input a name.") ;
 
     }
-
 
   }
 
   if (command === `${prefix}title`) {
 
-    let member = message.guild.members.find('displayName', args[0]) ;
-    if (member) {
+    if (args[0]) {
 
-      let newTitle = args.slice(1).join(" ") ;
+      let member = message.guild.members.find('displayName', args[0]) ;
+      if (member) {
 
-      let profile = client.getProfile.get(message.author.id, message.guild.id) ;
+        let newTitle = args.slice(1).join(" ") ;
 
-      if (!profile) {
+        let profile = client.getProfile.get(message.author.id, message.guild.id) ;
 
-        profile = buildProfile(message.author.id, message.guild.id) ;
+        if (!profile) {
+
+          profile = buildProfile(message.author.id, message.guild.id) ;
+
+        }
+
+        profile.title = newTitle ;
+
+        client.setProfile.run(profile) ;
+
+      } else {
+
+          message.channel.send("User not found!") ;
 
       }
 
-      profile.title = newTitle ;
-
-      client.setProfile.run(profile) ;
 
     } else {
 
-        message.channel.send("User not found!") ;
+      message.channel.send("Please input a name.") ;
 
     }
+
+
 
   }
 
