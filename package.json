@@ -9,7 +9,6 @@
   "author": "lazward",
   "license": "ISC",
   "dependencies": {
-    "better-sqlite3": "^5.4.0",
     "discord.js": "^11.4.2",
     "node-gyp": "^3.8.0"
   }
