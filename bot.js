@@ -11,10 +11,10 @@ const sql = new SQLite('./profiles.sqlite') ;
 
 client.on("ready", () => {
 
-  const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = 'profiles';") ;
+  const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = '{profiles}';") ;
   if (!table['count(*)']) {
 
-    //sql.prepare("CREATE TABLE IF NOT EXISTS profiles (id TEXT PRIMARY KEY, user TEXT, guild TEXT, title TEXT, desc TEXT);").run() ;
+    //sql.prepare("CREATE TABLE IF NOT EXISTS profiles (id TEXT PRIMARY KEY, user TEXT, guild TEXT, title TEXT, desc TEXT, quote TEXT);").run() ;
     //sql.prepare("CREATE UNIQUE INDEX idx_profiles_id ON profiles (id);").run() ;
     sql.pragma("synchronous = 1") ;
     sql.pragma("journal_mode = wal") ;
@@ -22,7 +22,7 @@ client.on("ready", () => {
   }
 
   client.getProfile = sql.prepare("SELECT * FROM profiles WHERE user = ? AND guild = ?") ;
-  client.setProfile = sql.prepare("INSERT OR REPLACE INTO profiles (id, user, guild, title, desc) VALUES (@id, @user, @guild, @title, @desc);") ;
+  client.setProfile = sql.prepare("INSERT OR REPLACE INTO profiles (id, user, guild, title, desc, quote) VALUES (@id, @user, @guild, @title, @desc, @quote);") ;
 
 
   console.log("bot has started!") ;
@@ -68,63 +68,57 @@ client.on("message", message => {
       .setDescription(profile.title)
       .addField("Description", profile.desc)
       .addField("Discord Username", `${message.author.username}#${message.author
-      .discriminator}`) ;
+      .discriminator}`)
+      .addField("Quote", profile.quote) ;
 
 
     message.channel.send(embed) ;
 
   }
 
-  if (command === `${prefix}desc`) {
+  if (command === `${prefix}desc` || command === `${prefix}title` || command === `${prefix}quote`) {
 
-    let member = message.guild.members.find('displayName', args[0]) ;
-    if (member) {
+    if (args[0]) {
 
-      let newDesc = args.slice(1).join(" ") ;
+      let member = message.guild.members.find('displayName', args[0]) ;
+      if (member) {
 
-      let profile = client.getProfile.get(message.author.id, message.guild.id) ;
+        let newInfo = args.slice(1).join(" ") ;
 
-      if (!profile) {
+        let profile = client.getProfile.get(message.author.id, message.guild.id) ;
 
-        profile = buildProfile(message.author.id, message.guild.id) ;
+        if (!profile) {
 
-      }
+          profile = buildProfile(message.author.id, message.guild.id) ;
 
-      profile.desc = newDesc ;
+        }
 
-      client.setProfile.run(profile) ;
+        switch(command) {
 
-    } else {
+          case `${prefix}desc`:
+          profile.desc = newInfo ;
+          break ;
+          case `${prefix}title`:
+          profile.title = newInfo ;
+          break ;
+          case `${prefix}quote`:
+          profile.quote = newInfo ;
+          break ;
 
-        message.channel.send("User not found!") ;
 
-    }
+        }
 
+        client.setProfile.run(profile) ;
 
-  }
+      } else {
 
-  if (command === `${prefix}title`) {
-
-    let member = message.guild.members.find('displayName', args[0]) ;
-    if (member) {
-
-      let newTitle = args.slice(1).join(" ") ;
-
-      let profile = client.getProfile.get(message.author.id, message.guild.id) ;
-
-      if (!profile) {
-
-        profile = buildProfile(message.author.id, message.guild.id) ;
+          message.channel.send("User not found!") ;
 
       }
 
-      profile.title = newTitle ;
-
-      client.setProfile.run(profile) ;
-
     } else {
 
-        message.channel.send("User not found!") ;
+      message.channel.send("Please input a name.") ;
 
     }
 
@@ -140,7 +134,8 @@ function buildProfile(user, guild) {
               user: user,
               guild: guild,
               title: "test",
-              desc: "tesssst"
+              desc: "tesssst",
+              quote: "test"
 
           }
 
