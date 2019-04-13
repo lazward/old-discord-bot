@@ -1,6 +1,7 @@
 const config = require("./config.json") ;
 const Discord = require("discord.js") ;
 const prefix = config.prefix ;
+const ownerID = config.ownerID ;
 
 console.log("Using token: " + config.token) ;
 
@@ -78,7 +79,9 @@ client.on("message", message => {
 
   if (command === `${prefix}desc` || command === `${prefix}title` || command === `${prefix}quote`) {
 
-    if (args[0]) {
+    if (message.author.id === `${ownerID}`) {
+
+      if (args[0]) {
 
       let member = message.guild.members.find('displayName', args[0]) ;
       if (member) {
@@ -121,6 +124,12 @@ client.on("message", message => {
       message.channel.send("Please input a name.") ;
 
     }
+
+  } else {
+
+    message.channel.send("You can't use this command.") ;
+
+  }
 
   }
 
