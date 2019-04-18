@@ -137,6 +137,8 @@ client.on("message", async message => {
 
   if (command === `${prefix}silence`) {
 
+    const text = args.join(" ") ;
+
     const canvas = Canvas.createCanvas(742, 560);
   	const ctx = canvas.getContext('2d');
 
@@ -144,9 +146,19 @@ client.on("message", async message => {
 
     ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
 
-    ctx.font = '48px sans-serif';
     ctx.fillStyle = '#ffffff';
-    ctx.fillText(args.join(" "), 39, 190);
+    ctx.font = 20 + 'px ' + `sans-serif`;
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'top';
+    var width = ctx.measureText(text).width + 2 * 4;
+    ctx.save();
+    ctx.translate(28+334/2, 136);
+    ctx.strokeRect(-334/2, 0, 334, 80);
+    ctx.scale(334 / width, 80 / 20);
+    ctx.translate(4, 0)
+    ctx.fillText(text, -width/2, 0);
+    ctx.restore();
+
   	const attachment = new Discord.Attachment(canvas.toBuffer(), 'silence.png');
 
     message.channel.send(attachment) ;
