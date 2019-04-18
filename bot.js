@@ -1,5 +1,7 @@
 const config = require("./config.json") ;
 const Discord = require("discord.js") ;
+const Canvas = require('canvas');
+const snekfetch = require('snekfetch');
 const prefix = config.prefix ;
 const ownerID = config.ownerID ;
 
@@ -30,7 +32,7 @@ client.on("ready", () => {
 
 }) ;
 
-client.on("message", message => {
+client.on("message", async message => {
 
   if(message.author.bot) {
 
@@ -130,6 +132,24 @@ client.on("message", message => {
     message.channel.send("You can't use this command.") ;
 
   }
+
+  }
+
+  if (command === `${prefix}silence`) {
+
+    const canvas = Canvas.createCanvas(742, 560);
+  	const ctx = canvas.getContext('2d');
+
+  	const image = await Canvas.loadImage('./silence.png');
+
+    ctx.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+    ctx.font = '48px sans-serif';
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(args.join(" "), 39, 190);
+  	const attachment = new Discord.Attachment(canvas.toBuffer(), 'silence.png');
+
+    message.channel.send(attachment) ;
 
   }
 
