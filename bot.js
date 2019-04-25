@@ -17,15 +17,15 @@ client.on("ready", () => {
   const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = '{profiles}';") ;
   if (!table['count(*)']) {
 
-    //sql.prepare("CREATE TABLE IF NOT EXISTS profiles (id TEXT PRIMARY KEY, user TEXT, guild TEXT, title TEXT, desc TEXT, quote TEXT);").run() ;
+    //sql.prepare("CREATE TABLE IF NOT EXISTS profiles (id TEXT PRIMARY KEY, user TEXT, title TEXT, desc TEXT, quote TEXT);").run() ;
     //sql.prepare("CREATE UNIQUE INDEX idx_profiles_id ON profiles (id);").run() ;
     sql.pragma("synchronous = 1") ;
     sql.pragma("journal_mode = wal") ;
 
   }
 
-  client.getProfile = sql.prepare("SELECT * FROM profiles WHERE user = ? AND guild = ?") ;
-  client.setProfile = sql.prepare("INSERT OR REPLACE INTO profiles (id, user, guild, title, desc, quote) VALUES (@id, @user, @guild, @title, @desc, @quote);") ;
+  client.getProfile = sql.prepare("SELECT * FROM profiles WHERE user = ?") ;
+  client.setProfile = sql.prepare("INSERT OR REPLACE INTO profiles (id, user, title, desc, quote) VALUES (@id, @user, @title, @desc, @quote);") ;
 
 
   console.log("bot has started!") ;
@@ -65,24 +65,50 @@ client.on("message", async message => {
 
   if (command === `${prefix}userinfo`) {
 
-    let profile = client.getProfile.get(message.author.id, message.guild.id) ;
+    let user ;
 
-    if (!profile) {
+    if (args[0]) {
 
-      profile = buildProfile(message.author.id, message.guild.id) ;
+      if (message.guild.members.find(user => user.displayName === args[0]) != undefined) {
+
+       user = message.guild.members.find(user => user.displayName === args[0]).user ;
+
+     }
+
+    } else {
+
+      user = message.author ;
 
     }
 
-    let embed = new Discord.RichEmbed()
-      .setAuthor(message.member.displayName, message.author.avatarURL)
-      .setDescription(profile.title)
-      .addField("Description", profile.desc)
-      .addField("Discord Username", `${message.author.username}#${message.author
-      .discriminator}`)
-      .addField("Quote", profile.quote) ;
+    if (user != undefined) {
+
+      let profile = client.getProfile.get(user.id) ;
+
+      if (!profile) {
+
+        profile = buildProfile(user.id) ;
+
+      }
+
+      let embed = new Discord.RichEmbed()
+        .setAuthor(message.guild.member(user).displayName, user.avatarURL)
+        .setDescription(profile.title)
+        .addField("Description", profile.desc)
+        .addField("Discord Username", `${user.username}#${user
+        .discriminator}`)
+        .addField("Quote", profile.quote) ;
 
 
-    message.channel.send(embed) ;
+      message.channel.send(embed) ;
+
+
+    } else {
+
+      message.channel.send("Invalid name.") ;
+
+    }
+
 
   }
 
@@ -97,11 +123,11 @@ client.on("message", async message => {
 
         let newInfo = args.slice(1).join(" ") ;
 
-        let profile = client.getProfile.get(message.author.id, message.guild.id) ;
+        let profile = client.getProfile.get(member.id, member.guild.id) ;
 
         if (!profile) {
 
-          profile = buildProfile(message.author.id, message.guild.id) ;
+          profile = buildProfile(message.author.id) ;
 
         }
 
@@ -174,16 +200,15 @@ client.on("message", async message => {
 
 }) ;
 
-function buildProfile(user, guild) {
+function buildProfile(user) {
 
     let output = {
 
-              id: `${guild}-${user}`,
+              id: user.id,
               user: user,
-              guild: guild,
-              title: "test",
-              desc: "tesssst",
-              quote: "test"
+              title: "placeholder",
+              desc: "placeholder",
+              quote: "placeholder"
 
           }
 
