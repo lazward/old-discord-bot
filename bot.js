@@ -57,6 +57,12 @@ client.on("message", async message => {
 
   }
 
+  if (message.content.toLowerCase().replace(/\s/g,'').includes("goodbot")) {
+
+    message.react('328583701321744396') ;
+
+  }
+
   if (!command.startsWith(prefix)) {
 
     return ;
