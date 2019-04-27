@@ -50,7 +50,7 @@ client.on("message", async message => {
   let command = messageArray[0] ;
   let args = messageArray.slice(1) ;
 
-  if (message.content.includes("john smith") || message.content.replace(/\s/g,'').includes("horse")) {
+  if (message.content.toLowerCase().replace(/\s/g,'').includes("johnsmith") || message.content.toLowerCase().replace(/\s/g,'').includes("horse")) {
 
     message.react('🐴') ;
     message.react('🐎') ;
