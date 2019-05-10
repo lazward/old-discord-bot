@@ -1,11 +1,8 @@
-const config = require("./config.json") ;
 const Discord = require("discord.js") ;
 const Canvas = require('canvas');
 const snekfetch = require('snekfetch');
-const prefix = config.prefix ;
-const ownerID = config.ownerID ;
-
-console.log("Using token: " + config.token) ;
+const prefix = process.env.prefix ;
+const ownerID = process.env.ownerID ;
 
 const client = new Discord.Client({disableEveryone: true}) ;
 
@@ -17,8 +14,8 @@ client.on("ready", () => {
   const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = '{profiles}';") ;
   if (!table['count(*)']) {
 
-    //sql.prepare("CREATE TABLE IF NOT EXISTS profiles (id TEXT PRIMARY KEY, user TEXT, title TEXT, desc TEXT, quote TEXT);").run() ;
-    //sql.prepare("CREATE UNIQUE INDEX idx_profiles_id ON profiles (id);").run() ;
+    sql.prepare("CREATE TABLE IF NOT EXISTS profiles (id TEXT PRIMARY KEY, user TEXT, title TEXT, desc TEXT, quote TEXT);").run() ;
+    sql.prepare("CREATE UNIQUE INDEX idx_profiles_id ON profiles (id);").run() ;
     sql.pragma("synchronous = 1") ;
     sql.pragma("journal_mode = wal") ;
 
@@ -222,4 +219,4 @@ function buildProfile(user) {
 
 }
 
-client.login(config.token) ;
+client.login(process.env.BOT_TOKEN) ;
