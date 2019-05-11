@@ -1,8 +1,10 @@
+
+const config = require("./config.json") ;
 const Discord = require("discord.js") ;
 const Canvas = require('canvas');
 const snekfetch = require('snekfetch');
-const prefix = process.env.prefix ;
-const ownerID = process.env.ownerID ;
+const prefix = config.prefix ;
+const ownerID = config.ownerID ;
 
 const client = new Discord.Client({disableEveryone: true}) ;
 
@@ -14,8 +16,8 @@ client.on("ready", () => {
   const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = '{profiles}';") ;
   if (!table['count(*)']) {
 
-    sql.prepare("CREATE TABLE IF NOT EXISTS profiles (id TEXT PRIMARY KEY, user TEXT, title TEXT, desc TEXT, quote TEXT);").run() ;
-    sql.prepare("CREATE UNIQUE INDEX idx_profiles_id ON profiles (id);").run() ;
+    //sql.prepare("CREATE TABLE profiles (id TEXT PRIMARY KEY, user TEXT, title TEXT, desc TEXT, quote TEXT);").run() ;
+    //sql.prepare("CREATE UNIQUE INDEX idx_profiles_id ON profiles (id);").run() ;
     sql.pragma("synchronous = 1") ;
     sql.pragma("journal_mode = wal") ;
 
@@ -49,8 +51,9 @@ client.on("message", async message => {
 
   if (message.content.toLowerCase().replace(/\s/g,'').includes("johnsmith") || message.content.toLowerCase().replace(/\s/g,'').includes("horse")) {
 
-    message.react('🐴') ;
-    message.react('🐎') ;
+    message.react('🐴')
+    .then(() => message.react('🐎'))
+    .catch(() => console.error('couldnt horse react :,(')) ;
 
   }
 
@@ -70,11 +73,11 @@ client.on("message", async message => {
 
     let user ;
 
-    if (args[0]) {
+    if (args.join(" ")) {
 
-      if (message.guild.members.find(user => user.displayName === args[0]) != undefined) {
+      if (message.guild.members.find(user => user.displayName === args.join(" ")) != undefined) {
 
-       user = message.guild.members.find(user => user.displayName === args[0]).user ;
+       user = message.guild.members.find(user => user.displayName === args.join(" ")).user ;
 
      }
 
@@ -88,7 +91,7 @@ client.on("message", async message => {
 
       let profile = client.getProfile.get(user.id) ;
 
-      if (!profile) {
+      if (profile == undefined) {
 
         profile = buildProfile(user.id) ;
 
@@ -121,18 +124,23 @@ client.on("message", async message => {
 
       if (args[0]) {
 
-      let member = message.guild.members.find('displayName', args[0]) ;
-      if (member) {
+       let user ;
 
-        let newInfo = args.slice(1).join(" ") ;
+       let name = args[0].replace(/_/g, " ") ;
 
-        let profile = client.getProfile.get(member.id, member.guild.id) ;
+       if (message.guild.members.find(user => user.displayName === name) != undefined) {
 
-        if (!profile) {
+         user = message.guild.members.find(user => user.displayName === name).user ;
 
-          profile = buildProfile(message.author.id) ;
+         let newInfo = args.slice(1).join(" ") ;
 
-        }
+         let profile = client.getProfile.get(user.id) ;
+
+         if (!profile) {
+
+           profile = buildProfile(user.id) ;
+
+         }
 
         switch(command) {
 
@@ -150,6 +158,8 @@ client.on("message", async message => {
         }
 
         client.setProfile.run(profile) ;
+
+        message.react('👌') ;
 
       } else {
 
@@ -207,7 +217,7 @@ function buildProfile(user) {
 
     let output = {
 
-              id: user.id,
+              id: user,
               user: user,
               title: "placeholder",
               desc: "placeholder",
@@ -219,4 +229,4 @@ function buildProfile(user) {
 
 }
 
-client.login(process.env.BOT_TOKEN) ;
+client.login(config.token) ;
