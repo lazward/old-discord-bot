@@ -62,3 +62,8 @@ typings/
 
 # config
 config.json
+
+#sqlite
+profiles.sqlite-wal
+profiles.sqlite-shm
+profiles.sqlite
