@@ -213,6 +213,27 @@ client.on("message", async message => {
 
 }) ;
 
+client.on("messageDelete", (message) => {
+
+  let user = message.author ;
+
+  let embed = new Discord.RichEmbed()
+  .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+  .setDescription(message.member + " in channel " + message.guild.channels.find(channel => channel.name === message.channel.name))
+  .addField("Message", `${message.content}`)
+  .addField("Time created", new Date(message.createdTimestamp).toString())
+  .setFooter("ID: " + message.id)
+  .setTimestamp() ;
+
+  client.channels.find(channel => channel.name === "log").send(embed) ;
+
+}) ;
+
+client.on("messageUpdate", (oldMessage, newMessage) => {
+
+
+});
+
 function buildProfile(user) {
 
     let output = {
