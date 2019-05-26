@@ -69,7 +69,7 @@ client.on("message", async message => {
 
   }
 
-  if (command === `${prefix}userinfo`) {
+  if (command === `${prefix}whois`) {
 
     let user ;
 
@@ -225,7 +225,7 @@ client.on("messageDelete", (message) => {
   .setFooter("ID: " + message.id)
   .setTimestamp() ;
 
-  client.channels.find(channel => channel.name === "log").send(embed) ;
+  message.guild.channels.find(channel => channel.name === "log").send(embed) ;
 
 }) ;
 
