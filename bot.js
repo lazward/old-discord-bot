@@ -231,6 +231,23 @@ client.on("messageDelete", (message) => {
 
 client.on("messageUpdate", (oldMessage, newMessage) => {
 
+  if (oldMessage.content) {
+
+      let user = oldMessage.author ;
+
+      let embed = new Discord.RichEmbed()
+      .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+      .setDescription(oldMessage.member + " in channel " + oldMessage.guild.channels.find(channel => channel.name === oldMessage.channel.name) + ` [Goto](${newMessage.url})`)
+      .addField("Before", `${oldMessage.content}`)
+      .addField("After", `${newMessage.content}`)
+      .addField("Time created", new Date(oldMessage.createdTimestamp).toString())
+      .setFooter("ID: " + newMessage.id)
+      .setTimestamp() ;
+
+     oldMessage.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+    }
+
 
 });
 
