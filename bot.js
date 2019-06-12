@@ -215,23 +215,29 @@ client.on("message", async message => {
 
 client.on("messageDelete", (message) => {
 
-  let user = message.author ;
+  if (message) {
 
-  let embed = new Discord.RichEmbed()
-  .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
-  .setDescription(message.member + " in channel " + message.guild.channels.find(channel => channel.name === message.channel.name))
-  .addField("Message", `${message.content}`)
-  .addField("Time created", new Date(message.createdTimestamp).toString())
-  .setFooter("ID: " + message.id)
-  .setTimestamp() ;
+    let user = message.author ;
 
-  message.guild.channels.find(channel => channel.name === "log").send(embed) ;
+    let embed = new Discord.RichEmbed()
+    .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+    .setDescription(message.member + " deleted in channel " + message.guild.channels.find(channel => channel.name === message.channel.name))
+    .addField("Message", `${message.content}`)
+    .addField("Time created", new Date(message.createdTimestamp).toString())
+    .setFooter("ID: " + message.id)
+    .setTimestamp() ;
+
+    message.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+  }
 
 }) ;
 
 client.on("messageUpdate", (oldMessage, newMessage) => {
 
   if (oldMessage.content) {
+
+    if (oldMessage.content != newMessage.content) {
 
       let user = oldMessage.author ;
 
@@ -248,6 +254,7 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
 
     }
 
+    }
 
 });
 
