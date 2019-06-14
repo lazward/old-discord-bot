@@ -217,17 +217,26 @@ client.on("messageDelete", (message) => {
 
   if (message) {
 
-    let user = message.author ;
+    try {
 
-    let embed = new Discord.RichEmbed()
-    .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
-    .setDescription(message.member + " deleted in channel " + message.guild.channels.find(channel => channel.name === message.channel.name))
-    .addField("Message", `${message.content}`)
-    .addField("Time created", new Date(message.createdTimestamp).toString())
-    .setFooter("ID: " + message.id)
-    .setTimestamp() ;
+      let user = message.author ;
 
-    message.guild.channels.find(channel => channel.name === "log").send(embed) ;
+      let embed = new Discord.RichEmbed()
+      .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+      .setDescription(message.member + " deleted in channel " + message.guild.channels.find(channel => channel.name === message.channel.name))
+      .addField("Message", `${message.content}`)
+      .addField("Time created", new Date(message.createdTimestamp).toString())
+      .setFooter("ID: " + message.id)
+      .setTimestamp() ;
+
+      message.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+    } catch(error) {
+
+      console.error("message deleted") ;
+
+    }
+
 
   }
 
@@ -239,24 +248,100 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
 
     if (oldMessage.content != newMessage.content) {
 
-      let user = oldMessage.author ;
+      try {
 
-      let embed = new Discord.RichEmbed()
-      .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
-      .setDescription(oldMessage.member + " in channel " + oldMessage.guild.channels.find(channel => channel.name === oldMessage.channel.name) + ` [Goto](${newMessage.url})`)
-      .addField("Before", `${oldMessage.content}`)
-      .addField("After", `${newMessage.content}`)
-      .addField("Time created", new Date(oldMessage.createdTimestamp).toString())
-      .setFooter("ID: " + newMessage.id)
-      .setTimestamp() ;
+        let user = oldMessage.author ;
 
-     oldMessage.guild.channels.find(channel => channel.name === "log").send(embed) ;
+        let embed = new Discord.RichEmbed()
+        .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+        .setDescription(oldMessage.member + " in channel " + oldMessage.guild.channels.find(channel => channel.name === oldMessage.channel.name) + ` [Goto](${newMessage.url})`)
+        .addField("Before", `${oldMessage.content}`)
+        .addField("After", `${newMessage.content}`)
+        .addField("Time created", new Date(oldMessage.createdTimestamp).toString())
+        .setFooter("ID: " + newMessage.id)
+        .setTimestamp() ;
+
+        oldMessage.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+
+      } catch(error) {
+
+        console.error("message edited") ;
+
+      }
+
 
     }
 
     }
 
 });
+
+client.on("voiceStateUpdate", function(oldMember, newMember) {
+
+  if (!oldMember.voiceChannel && newMember.voiceChannel) {
+
+    try {
+
+      let user = newMember.user ;
+
+      let embed = new Discord.RichEmbed()
+      .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+      .setDescription(newMember + " joined voice channel " + newMember.voiceChannel.name)
+      .setTimestamp() ;
+
+      newMember.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+
+    } catch(error) {
+
+      console.error("someone joined vc") ;
+
+    }
+
+  } else if (oldMember.voiceChannel && !newMember.voiceChannel) {
+
+    try {
+
+      let user = oldMember.user ;
+
+      let embed = new Discord.RichEmbed()
+      .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+      .setDescription(oldMember + " left voice channel " + oldMember.voiceChannel.name)
+      .setTimestamp() ;
+
+      newMember.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+
+    } catch(error) {
+
+      console.error("someone left vc") ;
+
+    }
+
+  } else if ((oldMember.voiceChannel && newMember.voiceChannel) && (oldMember.voiceChannel != newMember.voiceChannel)) {
+
+    try {
+
+      let user = oldMember.user ;
+
+      let embed = new Discord.RichEmbed()
+      .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+      .setDescription(oldMember + " moved from " + oldMember.voiceChannel.name + " to " + newMember.voiceChannel.name)
+      .setTimestamp() ;
+
+      newMember.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+
+    } catch(error) {
+
+      console.error("someone changed vc") ;
+
+    }
+
+  }
+
+}) ;
 
 function buildProfile(user) {
 
