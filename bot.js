@@ -343,6 +343,49 @@ client.on("voiceStateUpdate", function(oldMember, newMember) {
 
 }) ;
 
+client.on("guildMemberAdd", function(member) {
+
+ try {
+
+   let user = member.user ;
+
+   let embed = new Discord.RichEmbed()
+   .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+   .setDescription(member + " has joined the server.")
+   .setTimestamp() ;
+
+   member.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+  } catch(error) {
+
+   console.error("someoned joined the server") ;
+
+ }
+
+}) ;
+
+client.on("guildMemberRemove", function(member) {
+
+ try {
+
+   let user = member.user ;
+
+   let embed = new Discord.RichEmbed()
+   .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL).setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+   .setDescription(member + " has left the server.")
+   .setTimestamp() ;
+
+   member.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+  } catch(error) {
+
+   console.error("someoned left the server") ;
+
+ }
+
+}) ;
+
+
 function buildProfile(user) {
 
     let output = {
