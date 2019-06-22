@@ -217,26 +217,43 @@ client.on("messageDelete", (message) => {
 
   if (message) {
 
-    try {
+    if (!message.content && message.attachments) {
 
       let user = message.author ;
 
       let embed = new Discord.RichEmbed()
       .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
       .setDescription(message.member + " deleted in channel " + message.guild.channels.find(channel => channel.name === message.channel.name))
-      .addField("Message", `${message.content}`)
+      .addField("Message", `Contained image/attachment`)
       .addField("Time created", new Date(message.createdTimestamp).toString())
       .setFooter("ID: " + message.id)
       .setTimestamp() ;
 
       message.guild.channels.find(channel => channel.name === "log").send(embed) ;
 
-    } catch(error) {
+    } else {
 
-      console.error("message deleted") ;
+      try {
+
+        let user = message.author ;
+
+          let embed = new Discord.RichEmbed()
+          .setAuthor(`${user.username}#${user.discriminator}`, user.avatarURL)
+          .setDescription(message.member + " deleted in channel " + message.guild.channels.find(channel => channel.name === message.channel.name))
+          .addField("Message", `${message.content}`)
+          .addField("Time created", new Date(message.createdTimestamp).toString())
+          .setFooter("ID: " + message.id)
+          .setTimestamp() ;
+
+          message.guild.channels.find(channel => channel.name === "log").send(embed) ;
+
+      } catch(error) {
+
+        console.error("message deleted") ;
+
+      }
 
     }
-
 
   }
 
@@ -358,7 +375,7 @@ client.on("guildMemberAdd", function(member) {
 
   } catch(error) {
 
-   console.error("someoned joined the server") ;
+   console.error("someone joined the server") ;
 
  }
 
@@ -379,9 +396,19 @@ client.on("guildMemberRemove", function(member) {
 
   } catch(error) {
 
-   console.error("someoned left the server") ;
+   console.error("someone left the server") ;
 
  }
+
+}) ;
+
+client.on("messageReactionAdd", function(messageReaction, user){
+
+  if (messageReaction.emoji.name === '🐴') {
+
+    messageReaction.message.react('🐴') ;
+
+  }
 
 }) ;
 
