@@ -99,34 +99,50 @@ client.on("message", async message => {
 
     if (user != undefined) {
 
-      if (!client.profiles[user.id]) {
+      if (!user.bot) {
 
-        client.profiles[user.id] = {
+        if (!client.profiles[user.id]) {
 
-          name: message.guild.member(user).displayName,
-          title: "placeholder",
-          description: "placeholder",
-          quote: "placeholder"
+          client.profiles[user.id] = {
+
+            name: message.guild.member(user).displayName,
+            title: "placeholder",
+            description: "placeholder",
+            quote: "placeholder"
+
+          }
+
+          fs.writeFile("./profiles.json", JSON.stringify(client.profiles, null, 4), err => {
+            if (err) throw err;
+          });
 
         }
 
-        fs.writeFile("./profiles.json", JSON.stringify(client.profiles, null, 4), err => {
-          if (err) throw err;
-        });
+        let embed = new Discord.RichEmbed()
+          .setAuthor(message.guild.member(user).displayName, user.avatarURL)
+          .setDescription(client.profiles[user.id].title)
+          .addField("Description", client.profiles[user.id].description)
+          .addField("Discord Username", `${user.username}#${user
+                .discriminator}`)
+          .addField("Quote", client.profiles[user.id].quote);
+
+
+        message.channel.send(embed);
+
+
+      } else {
+
+        if (user.id === '274255132454289408') {
+
+          message.channel.send("https://puu.sh/DRibw/8bcc468409.png") ;
+
+        } else {
+
+          message.channel.send("That is a bot.");
+
+        }
 
       }
-
-      let embed = new Discord.RichEmbed()
-        .setAuthor(message.guild.member(user).displayName, user.avatarURL)
-        .setDescription(client.profiles[user.id].title)
-        .addField("Description", client.profiles[user.id].description)
-        .addField("Discord Username", `${user.username}#${user
-        .discriminator}`)
-        .addField("Quote", client.profiles[user.id].quote);
-
-
-      message.channel.send(embed);
-
 
     } else {
 
