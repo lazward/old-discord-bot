@@ -9,10 +9,19 @@ const client = new Discord.Client({
   disableEveryone: true
 });
 
+const fs = require("fs");
+client.profiles = require("./profiles.json");
+
+/*
+
 const SQLite = require("better-sqlite3");
 const sql = new SQLite('./profiles.sqlite');
 
+*/
+
 client.on("ready", () => {
+
+  /*
 
   const table = sql.prepare("SELECT count(*) FROM sqlite_master WHERE type='table' AND name = '{profiles}';");
   if (!table['count(*)']) {
@@ -26,7 +35,7 @@ client.on("ready", () => {
 
   client.getProfile = sql.prepare("SELECT * FROM profiles WHERE user = ?");
   client.setProfile = sql.prepare("INSERT OR REPLACE INTO profiles (id, user, title, desc, quote) VALUES (@id, @user, @title, @desc, @quote);");
-
+*/
 
   console.log("bot has started!");
 
@@ -90,21 +99,30 @@ client.on("message", async message => {
 
     if (user != undefined) {
 
-      let profile = client.getProfile.get(user.id);
+      if (!client.profiles[user.id]) {
 
-      if (profile == undefined) {
+        client.profiles[user.id] = {
 
-        profile = buildProfile(user.id);
+          name: message.guild.member(user).displayName,
+          title: "placeholder",
+          description: "placeholder",
+          quote: "placeholder"
+
+        }
+
+        fs.writeFile("./profiles.json", JSON.stringify(client.profiles, null, 4), err => {
+          if (err) throw err;
+        });
 
       }
 
       let embed = new Discord.RichEmbed()
         .setAuthor(message.guild.member(user).displayName, user.avatarURL)
-        .setDescription(profile.title)
-        .addField("Description", profile.desc)
+        .setDescription(client.profiles[user.id].title)
+        .addField("Description", client.profiles[user.id].description)
         .addField("Discord Username", `${user.username}#${user
         .discriminator}`)
-        .addField("Quote", profile.quote);
+        .addField("Quote", client.profiles[user.id].quote);
 
 
       message.channel.send(embed);
@@ -133,34 +151,52 @@ client.on("message", async message => {
 
           user = message.guild.members.find(user => user.displayName === name).user;
 
-          let newInfo = args.slice(1).join(" ");
+          if (!user.bot) {
 
-          let profile = client.getProfile.get(user.id);
+            let newInfo = args.slice(1).join(" ");
 
-          if (!profile) {
+            if (!client.profiles[user.id]) {
 
-            profile = buildProfile(user.id);
+              client.profiles[user.id] = {
+
+                name: message.guild.member(user).displayName,
+                title: "placeholder",
+                description: "placeholder",
+                quote: "placeholder"
+
+              }
+
+            }
+
+            switch (command) {
+
+              case `${prefix}desc`:
+                client.profiles[user.id].description = newInfo;
+                break;
+              case `${prefix}title`:
+                client.profiles[user.id].title = newInfo;
+                break;
+              case `${prefix}quote`:
+                client.profiles[user.id].quote = newInfo;
+                break;
+
+
+            }
+
+            fs.writeFile("./profiles.json", JSON.stringify(client.profiles, null, 4), err => {
+              if (err) {
+                throw err;
+              } else {
+                message.react('👌');
+              }
+            });
+
+          } else {
+
+            message.channel.send("That is a bot.");
 
           }
 
-          switch (command) {
-
-            case `${prefix}desc`:
-              profile.desc = newInfo;
-              break;
-            case `${prefix}title`:
-              profile.title = newInfo;
-              break;
-            case `${prefix}quote`:
-              profile.quote = newInfo;
-              break;
-
-
-          }
-
-          client.setProfile.run(profile);
-
-          message.react('👌');
 
         } else {
 

@@ -67,3 +67,6 @@ config.json
 profiles.sqlite-wal
 profiles.sqlite-shm
 profiles.sqlite
+
+# profiles
+profiles.json
