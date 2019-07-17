@@ -134,7 +134,7 @@ client.on("message", async message => {
 
         if (user.id === '274255132454289408') {
 
-          message.channel.send("https://puu.sh/DRibw/8bcc468409.png") ;
+          message.channel.send('', {files: ["./joke.png"]}) ;
 
         } else {
 
@@ -151,9 +151,7 @@ client.on("message", async message => {
     }
 
 
-  }
-
-  if (command === `${prefix}desc` || command === `${prefix}title` || command === `${prefix}quote`) {
+  } else if (command === `${prefix}desc` || command === `${prefix}title` || command === `${prefix}quote`) {
 
     if (message.author.id === `${ownerID}`) {
 
@@ -232,9 +230,7 @@ client.on("message", async message => {
 
     }
 
-  }
-
-  if (command === `${prefix}silence`) {
+  } else if (command === `${prefix}silence`) {
 
     const text = args.join(" ");
 
@@ -261,6 +257,14 @@ client.on("message", async message => {
     const attachment = new Discord.Attachment(canvas.toBuffer(), 'silence.png');
 
     message.channel.send(attachment);
+
+  } else if (command === `${prefix}profiles`) {
+
+    if (message.author.id === `${ownerID}`) {
+
+      message.channel.send("Profiles.json", { files: ["./profiles.json"]}) ;
+
+    }
 
   }
 
